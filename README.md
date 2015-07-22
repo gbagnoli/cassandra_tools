@@ -36,7 +36,8 @@ usage: cassandra_repair_scheduler.py [-h] [-v] [-d] [--syslog FACILITY]
                                      [-p PORT] [-U USERNAME] [-P PASSWORD]
                                      [-t TTL] [-k KEYSPACE]
                                      [--cqlversion CQLVERSION]
-                                     [-r RANGE_REPAIR_TOOL]
+                                     [-r RANGE_REPAIR_TOOL] [--inc] [--par]
+                                     [--local] [--watch] [--reset]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -45,7 +46,7 @@ optional arguments:
   --syslog FACILITY     Send log messages to the syslog
   --logfile FILENAME    Send log messages to a file
   -H HOSTNAME, --hostname HOSTNAME
-                        Hostname (default: mactheknife.local)
+                        Hostname (default: ubik)
   -p PORT, --port PORT  Port (default: 9160)
   -U USERNAME, --username USERNAME
                         Username (if necessary)
@@ -59,7 +60,11 @@ optional arguments:
   -r RANGE_REPAIR_TOOL, --range_repair_tool RANGE_REPAIR_TOOL
                         Range repair tool path (default:
                         /usr/local/bin/range_repair.py)
-  --watch               See the live repair status.
+  --inc                 Run incremental repairs
+  --par                 Run parallel repairs
+  --local               Run the repairs in the local ring only
+  --watch               Watch the live repair status
+  --reset               Reset the repair status for the host
 ```
 
 # poison_pill_tester
