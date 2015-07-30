@@ -259,14 +259,17 @@ class CqlWrapper(object):
         cmd = [self.option_group.range_repair_tool,
                "-D", self.data_center,
                "-H", self.nodename,
+               "-s", self.option_group.steps,
                "--dry-run"]     # So we get a list of commands to run.
         if self.option_group.incrementals:
             cmd.extend(["--inc", "--par"])
         elif self.option_group.parallel:
             cmd.extend(["--par"])
+        if self.option_group.nopr:
+            cmd.extend(["-R"])
         if self.option_group.local:
             cmd.append("--local")
-        logging.debug("geting repair steps, this may take a while")
+        logging.debug("getting repair steps, this may take a while")
         repair_steps = subprocess.check_output(cmd).split('\n')
         for line in repair_steps:
             if not line:
@@ -492,6 +495,12 @@ def cli_parsing():
                         help="Range repair tool path (default: %(default)s)")
     parser.add_argument("--inc", dest="incrementals", action="store_true",
                         default=False, help="Run incremental repairs")
+    parser.add_argument('--nopr', dest="nopr", action='store_true',
+                        default=False, help="Disable partitioner range."
+                        " Default: -pr enabled")
+    parser.add_argument("--steps", dest="steps", action="store",
+                        default="100", help="Steps. Default: "
+                        "%(default)s")
     parser.add_argument("--par", dest="parallel", action="store_true",
                         default=False, help="Run parallel repairs")
     parser.add_argument("--local", default=False, action="store_true",
