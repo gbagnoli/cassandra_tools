@@ -1,13 +1,21 @@
 #! /bin/bash
+set -u
 
 # Author: Brian Gallew <bgallew@llnw.com> or <geek@gallew.org>
+NODETOOL_PORT="${NODETOOL_PORT:-7199}"
+JMX_PORT="${JMX_PORT:-8081}"
+nodes=($@)
 
-if [ -z "${1}" ] ; then
-    print "Usage: ${0} hostname [hostname ...]"
-    exit
+if [ "${#nodes[@]}" -eq 0 ] ; then
+  nodes=($(nodetool -p "${NODETOOL_PORT}" status | grep '^UN' | awk '{print $2}'))
 fi
 
-while test -n "${1}" ; do
-    wget -q -O /dev/null "http://${1}:8081/invoke?operation=forceTerminateAllRepairSessions&objectname=org.apache.cassandra.db%3Atype%3DStorageService"
-    shift
+for node in "${nodes[@]}"; do
+    echo -n "Stopping repair on $node ..."
+    curl -L -s "http://${node}:${JMX_PORT}/invoke?operation=forceTerminateAllRepairSessions&objectname=org.apache.cassandra.db%3Atype%3DStorageService" >/dev/null
+    if [ $? -eq 0 ]; then
+      echo "OK"
+    else
+      echo "FAIL!"
+    fi
 done
