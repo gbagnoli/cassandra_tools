@@ -456,7 +456,7 @@ def setup_logging(option_group):
     if option_group.syslog:
         # Use standard format here because timestamp and level will be added by
         # syslogd.
-        logger.addHandler(logging.handlers.SyslogHandler(facility=option_group.syslog))
+        logger.addHandler(logging.handlers.SysLogHandler(facility=option_group.syslog))
     if option_group.logfile:
         logger.addHandler(logging.FileHandler(option_group.logfile))
         logger.handlers[-1].setFormatter(logging.Formatter(file_log_format))
