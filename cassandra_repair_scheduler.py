@@ -257,7 +257,6 @@ class CqlWrapper(object):
     def run_repair(self):
         """Run the entire repair"""
         cmd = [self.option_group.range_repair_tool,
-               "-D", self.data_center,
                "-H", self.nodename,
                "-s", self.option_group.steps,
                "--dry-run"]     # So we get a list of commands to run.
@@ -269,6 +268,9 @@ class CqlWrapper(object):
             cmd.extend(["-R"])
         if self.option_group.local:
             cmd.append("--local")
+        if not self.option_group.skip_dc:
+            cmd.extend(["-D", self.data_center])
+
         logging.debug("getting repair steps, this may take a while")
         repair_steps = subprocess.check_output(cmd).split('\n')
         for line in repair_steps:
@@ -503,6 +505,8 @@ def cli_parsing():
                         "%(default)s")
     parser.add_argument("--par", dest="parallel", action="store_true",
                         default=False, help="Run parallel repairs")
+    parser.add_argument('--skip-dc', dest='skip_dc', action='store_true',
+                        default=False, help='Do not specify DC')
     parser.add_argument("--local", default=False, action="store_true",
                         help="Run the repairs in the local ring only")
     parser.add_argument("--watch", action="store_true", default=False,
